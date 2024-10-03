@@ -14,9 +14,9 @@ pt5 = [-squidSize ; 0 ; 1];
 pt6 = [-2*squidSize ; squidSize/2 ; 1];
 
 %right leg
-pt7 = [0 ; -squidSize/2 ; 1];
-pt8 = [-squidSize ; -squidSize ; 1];
-pt9 = [-2*squidSize ; -squidSize/2 ; 1];
+pt7 = [0 ; -squidSize/2 ; 1]; % hip
+pt8 = [-squidSize ; -squidSize ; 1]; % knee
+pt9 = [-2*squidSize ; -squidSize/2 ; 1]; % foot
 
 % straight stripes
     pt10 = [squidSize/2 ; squidSize/2 ; 1];
