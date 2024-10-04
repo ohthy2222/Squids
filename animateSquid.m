@@ -1,8 +1,12 @@
 function animateSquid ()
 
 
-imageName = "OceanImage.png";
-[oceanHeight, oceanWidth] = drawOcean(imageName);
+oceanImage = "OceanImage.png";
+birdImage = "SmallBird.png";
+##orangethImage = "OrangethreplaceImage.png";
+[oceanHeight, oceanWidth] = drawOcean(oceanImage);
+[replaceImageHeight, replaceImageWidth] = drawReplaceImage(birdImage);
+##[replaceImageHeight, replaceImageWidth] = drawReplaceImage(orangethImage)
 
 % squid creation
   squidColor = [.2 .1 .6];
@@ -46,16 +50,16 @@ maxRadius = oceanHeight;
 % ---------------------------------- animate loop --------------------------------------------
   for( clock = 1:500)
 
-##% --------------------fish stuff----------------------------------------
-##  % move fish
-##  fishX = fishX + fishForwardMove;
-##
-##
-##  % check fish
-##  [fishX,fishY] = checkBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
-##
-##    % draw fish
-## fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
+% --------------------fish stuff----------------------------------------
+  % move fish
+  fishX = fishX + fishForwardMove;
+
+
+  % check fish
+  [fishX,fishY] = checkBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
+
+    % draw fish
+ fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
 % --------------------squid stuff----------------------------------------
 
@@ -103,7 +107,7 @@ endfor
 pause(.05);
 delete(squidHandle);
 delete(circleHandle);
-## delete(fishHandle);
+delete(fishHandle);
 
   endfor
 
