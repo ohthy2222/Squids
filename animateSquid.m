@@ -78,7 +78,7 @@ squidX = (squidX + squidForwardMove);
 
    squidHandle = drawSquid(squidSize,squidColor,squidWidth,clock,squidX,squidY,squidTheta);
 
-% --------------------bubble stuff----------------------------------------
+% --------------------bubble stuff-----------------------------------------
    % move bubbles
    for i = 1: numBubbles
 
