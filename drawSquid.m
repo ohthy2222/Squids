@@ -1,6 +1,4 @@
-function squidHandle = drawSquid (squidSize, color, width, clock, Dx, Dy, theta)
-
-theta = pi/2
+function squidHandle = drawSquid (squidSize, color, width, clock, x, y, theta)
 
 % get the squid points for a squid of size squidSize from getSquid
 squid = getSquid(squidSize, clock);
@@ -10,7 +8,7 @@ R = getRotate(theta);
 squid = R*squid;
 
 %Translate the squid by deltaX, deltaY from the origin.
-T = getTranslate(Dx,Dy);
+T = getTranslate(x,y);
 squidPoints = T*squid;
 
 

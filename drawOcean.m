@@ -1,4 +1,4 @@
-function [height,width] = drawOcean (imageName)
+function [oceanHeight,oceanWidth] = drawOcean (imageName)
 % drawOcean take the name of an image as its argument
 % and returns the height and width of the image
 
@@ -13,7 +13,7 @@ figure(1);
 image = imread(imageName);
 
 % get the size of the image
-[height,width]=size(image);
+[oceanHeight,oceanWidth]=size(image);
 
 % display the image
 imshow(imageName);

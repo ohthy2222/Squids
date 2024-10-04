@@ -9,7 +9,7 @@ imageName = "OceanImage.png";
   squidWidth = 4;
   squidSize = 50;
  % squid movement
-  squidDeltaTheta = pi/3;
+  squidDeltaTheta = pi/2;
   squidForwardMove = 100;
 
   % starting squid location
@@ -22,8 +22,8 @@ imageName = "OceanImage.png";
   bubbleMaxRadius = 20;
   bubbleMinRadius = 5;
 maxRadius = oceanHeight;
- bubbleColor = [.2, .1, .7]
- bubbleLineWidth = 3
+ bubbleColor = [.2, .1, .7];
+ bubbleLineWidth = 3;
  bubbleStep = 50;
 
   for i = 1: numBubbles
@@ -46,7 +46,7 @@ maxRadius = oceanHeight;
 % ---------------------------------- animate loop --------------------------------------------
   for( clock = 1:500)
 
-##% --------------------fish stuf----------------------------------------
+##% --------------------fish stuff----------------------------------------
 ##  % move fish
 ##  fishX = fishX + fishForwardMove;
 ##
@@ -55,24 +55,30 @@ maxRadius = oceanHeight;
 ##  [fishX,fishY] = checkBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
 ##
 ##    % draw fish
-##fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
+## fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
-% --------------------squid stuf----------------------------------------
+% --------------------squid stuff----------------------------------------
+
+theta = squidTheta;
+R = getRotate(squidTheta);
+
+% rotate by theta radians
+squid = getSquid(squidSize, clock);
+squidTheta = squidTheta + squidDeltaTheta;
+squid = R*squid;
+squidX = squidX + 2*squidForwardMove*cos(squidTheta);
+squidY = squidY + 2*squidForwardMove*sin(squidTheta);
+
 
 % move squid
-squidX = (squidY + 20);
-
-% turn
-squidTheta = squidTheta + squidDeltaTheta;
-squidX = squidY + squidForwardMove*cos(squidTheta);
-squidY = squidY + squidForwardMove*sin(squidTheta);
+squidX = (squidX + squidForwardMove);
 
 %check squid
-  [squidX , squidY] = checkBoundary (squidX,squidY,oceanHeight,oceanWidth,2*squidSize);
+  [squidX,squidY] = checkBoundary (squidX,squidY,oceanHeight,oceanWidth,2*squidSize);
 
-   squidHandle = drawSquid(squidSize,squidColor,squidWidth,clock,squidX,squidY);
+   squidHandle = drawSquid(squidSize,squidColor,squidWidth,clock,squidX,squidY,squidTheta);
 
-% --------------------bubble stuf----------------------------------------
+% --------------------bubble stuff----------------------------------------
    % move bubbles
    for i = 1: numBubbles
 
@@ -100,8 +106,5 @@ delete(circleHandle);
 ## delete(fishHandle);
 
   endfor
-
-
-
 
 endfunction

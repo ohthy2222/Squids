@@ -1,4 +1,9 @@
 function [newX , newY] = checkBoundary (X,Y,oceanHeight,oceanWidth,objectRadius)
+
+% X and Y in bounds
+newX = X;
+newY = Y;
+
 % check if X is out of bounds
 if (X > oceanWidth - objectRadius) % westeth check
   newX = objectRadius;
@@ -15,10 +20,6 @@ if (X > oceanWidth - objectRadius) % westeth check
 elseif (Y < objectRadius) % northeth check
   newY = oceanHeight - objectRadius;
   newX = X;
-else % X and Y in bounds
-newX = X;
-newY = Y;
-
 endif
 
 endfunction
