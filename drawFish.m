@@ -1,22 +1,15 @@
-function fishHandle = drawFish (radius,xCenter,yCenter,fishColor,fishLineWidth)
-lineSegments = 50;
-deltaTheta = 2*pi/lineSegments;
-mouthTheta = pi/3;
-theta = [mouthTheta:deltaTheta: 2*pi-mouthTheta];
+function fishHandle = drawFish (radius, xCenter, yCenter, fishColor, fishLineWidth, clock)
 
-% x and y coordinates of the unit circle
-cosTheta = cos(theta);
-sinTheta = sin(theta);
+% compute tickTok
+tickTock = mod(clock,2);
 
-% x and y coordinates of the circle of radius r about...
-x = radius*cosTheta;
-y = radius*sinTheta;
-z = ones(1,length(x));
+if(tickTock == 0)
+mouthAngle = pi/6;
+elsemouthAngle = 0;
+endif
 
-% create a matrix with all the x coordinates on the...
-% all the y coordinates on the second rows
-
-circleMatrix = [x;y;z];
+mouthAngle = pi/6;
+circleMatrix = getCircle(radius,mouthAngle);
 
 % get the translation matrix
 T = getTranslate(xCenter,yCenter);
@@ -33,7 +26,35 @@ y = [y,yCenter,y(1)];
 
 
 % circle of radius r about the xCenter, yCenter
-fishHandle = line(x,y);
+fishBodyHandle = line(x,y);
+
+% eating time
+if(tickTock ==0)
+xMouth = [x(length(x)-teethSize),xCenter,x(teethSize)];
+yMouth = [y(length(y)-teethSize), yCenter, y(teethSize)];
+else
+xMouth = [xCenter,x(1)];
+yMouth = [yCenter,y(1)];
+endif
+
+fishMouthHandle = line(xMouth,yMouth);
+
+%tail
+xTail(1) = x(round(length(x)/2));
+yTail(1) = y(round(length(y)/2));
+
+xTail(2) = xTail(1)-radius;
+yTail(2) = yTail(1)+radius;
+
+xTail(3) = xTail(1)-radius;
+yTail(3) = yTail(1)-radius;
+
+xTail(4) = xTail(1);
+yTail(4) = yTail(1);
+
+fishTailHandle = line(xTail,yTail);
+
+fishHandle = [fishBodyHandle,fishMouthHandle,fishTailHandle];
 set(fishHandle,'Color',fishColor);
 set(fishHandle,'LineWidth',fishLineWidth);
 

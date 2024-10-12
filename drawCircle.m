@@ -1,21 +1,10 @@
 function circleHandle = drawCircle (radius,xCenter,yCenter,circleColor,circleLineWidth)
 
-lineSegments = 50;
-angleResolution = 2*pi/lineSegments;
-
-theta = [0 : angleResolution : 2*pi];
-
-sinTheta = sin(theta);
-cosTheta = cos(theta);
-
-x = radius*cosTheta;
-y = radius*sinTheta;
-z = ones(1,length(x));
+% get the points of circle
+circleMatrix = getCircle(radius,0);
 
 % bring in the big guns (getTranslate)
 T = getTranslate(xCenter,yCenter);
-
-circleMatrix = [ x;y;z];
 
 % translated circle
 circleMatrix = T*circleMatrix;

@@ -1,12 +1,25 @@
 function animateSquid ()
 
-
 oceanImage = "OceanImage.png";
 birdImage = "SmallBird.png";
-##orangethImage = "OrangethreplaceImage.png";
+orangethImage = "OrangethOwens.png";
+greenethHeadImage = "GreenethHead.png";
 [oceanHeight, oceanWidth] = drawOcean(oceanImage);
-[replaceImageHeight, replaceImageWidth] = drawReplaceImage(birdImage);
-##[replaceImageHeight, replaceImageWidth] = drawReplaceImage(orangethImage)
+## [owensHeight,owensWidth] = drawOwens (greenethHeadImage);
+
+##% player params
+##playerX = round (oceanWidth/2);
+##playerY = round (oceanHeight/2);
+##playerTheta = 0;
+##playerBodySize = 100;
+##playerHeadSize = 30;
+##netSize = 20;
+##playerColor = [0 0 1];
+##playerLineWidth = 2;
+##
+##playerHandle = drawPlayer (playerX, playerY, playerTheta,
+##                              playerBodySize, playerHeadSize, netSize,
+##                              playerColor, playerLineWidth);
 
 % squid creation
   squidColor = [.2 .1 .6];
@@ -46,10 +59,30 @@ maxRadius = oceanHeight;
   fishColor = [1, 0, 0];
   fishLineWidth = 3;
 
+  % Owens time
+  xOwens = 100;
+  yOwens = 100;
+% Speed of movement
+  xOwensSpe = 25;
+  yOwensSpe = 1;
+
+  [owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
+
+  % original parameters
+  toggleState = false;
+  squidHandle = []; % squid's here right now
+
+  % keyboard being called
+  set(gcf, 'KeyPressFcn', @keyPressed);
+
+  isRunning = true; % keep the loop running
+
+ ## owensHandle = imshow(greenethHeadImage, 'XData', [xOwens, xOwens + size(greenethHeadImage, 2)], 'YData', [yOwens, yOwens + size(greenethHeadImage, 1)]); % draw moment
   % time to animate
 % ---------------------------------- animate loop --------------------------------------------
-  for( clock = 1:500)
-
+  clock = 1; % give clock a starting value
+  while isRunning && clock <= 500
+hold on; % keep axises and plots for everything
 % --------------------fish stuff----------------------------------------
   % move fish
   fishX = fishX + fishForwardMove;
@@ -62,25 +95,68 @@ maxRadius = oceanHeight;
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
 % --------------------squid stuff----------------------------------------
-
-theta = squidTheta;
-R = getRotate(squidTheta);
-
 % rotate by theta radians
-squid = getSquid(squidSize, clock);
+squidPoints = getSquid(squidSize, clock);
+R = getRotate(squidTheta);
+squidRotated = R*squidPoints;
+squidX = squidX + squidForwardMove*cos(squidTheta);
+squidY = squidY + squidForwardMove*sin(squidTheta);
+squidX = squidX + squidForwardMove;
+
+
 squidTheta = squidTheta + squidDeltaTheta;
-squid = R*squid;
-squidX = squidX + 2*squidForwardMove*cos(squidTheta);
-squidY = squidY + 2*squidForwardMove*sin(squidTheta);
-
-
-% move squid
-squidX = (squidX + squidForwardMove);
 
 %check squid
   [squidX,squidY] = checkBoundary (squidX,squidY,oceanHeight,oceanWidth,2*squidSize);
 
-   squidHandle = drawSquid(squidSize,squidColor,squidWidth,clock,squidX,squidY,squidTheta);
+% GREENETH BECOMETH SQUIDDETH
+xOwens = squidX;
+yOwens = squidY;
+
+  % toggle the squid on
+if toggleState
+  if ~isempty(squidHandle) && ishandle(squidHandle)
+        delete(squidHandle);
+        squidHandle = [];
+  endif
+  set(owensHandle, 'Visible', 'on');
+  set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
+else
+  if isempty(squidHandle) || ~ishandle(squidHandle)
+    squidHandle = drawSquid(squidSize, squidColor, squidWidth, clock, squidX, squidY, squidTheta);;
+  else
+        for i = 1:length(squidHandle)
+          set(squidHandle(i), 'XData', squidRotated(1,:) + squidX, 'YData', squidRotated(2,:) + squidY);
+        endfor
+  endif
+  set(owensHandle,'Visible','off');
+   % rotate parameters, start'r up
+## else
+## Insert Greeneth toggles
+endif
+##R = getRotate(squidTheta);
+##
+##% rotate the squid again
+##squid = getSquid(squidSize, clock);
+##squidTheta = squidTheta + squidDeltaTheta;
+##squid = R*squid;
+##squidNewX = squidX + 2*squidForwardMove*cos(squidTheta);
+##squidNewY = squidY + 2*squidForwardMove*sin(squidTheta);
+
+%-------------------OWENS---------------------------------------------------
+
+##
+##  % Hide and seek squid
+##  if ~isempty(squidHandle)
+##    delete(squidHandle);
+##    squidHandle = [];
+##  endif
+
+% checketh greeneth
+
+% CALLETH FORTHETH THE GREENETH
+##[owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
+##set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
 
 % --------------------bubble stuff-----------------------------------------
    % move bubbles
@@ -102,13 +178,30 @@ endfor
    circleHandle(i) = drawCircle(bubbleRadius(i),bubbleX(i),bubbleY(i),bubbleColor,bubbleLineWidth);
 
 endfor
+% make all of the objects appear again
+ drawnow;
 
 
-pause(.05);
-delete(squidHandle);
+ pause(.1);
+
+% we have to increment the clock manually, or else the code freezes every time we toggle between images
+clock = clock + 1;
+
 delete(circleHandle);
 delete(fishHandle);
+  if ~isempty(squidHandle) && ishandle(squidHandle)
+    delete(squidHandle);
+  endif
 
-  endfor
+endwhile
+
+  % calleth the keyeth func
+  function keyPressed(~,event)
+    if strcmp(event.Key, 'k') % press the 'k' button on the keyboard to toggle
+      toggleState = ~toggleState; % switcheth squideth and greeneth
+    elseif strcmp(event.Key, 'escape')
+      isRunning = false; % stop the animation
+    endif
+  endfunction
 
 endfunction
