@@ -7,19 +7,17 @@ greenethHeadImage = "GreenethHead.png";
 [oceanHeight, oceanWidth] = drawOcean(oceanImage);
 ## [owensHeight,owensWidth] = drawOwens (greenethHeadImage);
 
-##% player params
-##playerX = round (oceanWidth/2);
-##playerY = round (oceanHeight/2);
-##playerTheta = 0;
-##playerBodySize = 100;
-##playerHeadSize = 30;
-##netSize = 20;
-##playerColor = [0 0 1];
-##playerLineWidth = 2;
-##
-##playerHandle = drawPlayer (playerX, playerY, playerTheta,
-##                              playerBodySize, playerHeadSize, netSize,
-##                              playerColor, playerLineWidth);
+oceanClock = 0;
+
+% player params
+playerX = round(oceanWidth/2);
+playerY = round(oceanHeight/2);
+playerTheta = 0;
+playerBodySize = 100;
+playerHeadSize = 30;
+netSize = 20;
+playerColor = [0 0 1];
+playerLineWidth = 2;
 
 % squid creation
   squidColor = [.2 .1 .6];
@@ -80,9 +78,15 @@ maxRadius = oceanHeight;
  ## owensHandle = imshow(greenethHeadImage, 'XData', [xOwens, xOwens + size(greenethHeadImage, 2)], 'YData', [yOwens, yOwens + size(greenethHeadImage, 1)]); % draw moment
   % time to animate
 % ---------------------------------- animate loop --------------------------------------------
-  clock = 1; % give clock a starting value
-  while isRunning && clock <= 500
+ while (true) % run forever
+##  while isRunning && clock <= 500
 hold on; % keep axises and plots for everything
+oceanClock = oceanClock + 1; % give clock a starting value
+%---------------------player stuff--------------------------------------
+% Draw Player
+playerHandle = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
+
+
 % --------------------fish stuff----------------------------------------
   % move fish
   fishX = fishX + fishForwardMove;
@@ -96,7 +100,7 @@ hold on; % keep axises and plots for everything
 
 % --------------------squid stuff----------------------------------------
 % rotate by theta radians
-squidPoints = getSquid(squidSize, clock);
+squidPoints = getSquid(squidSize, oceanClock);
 R = getRotate(squidTheta);
 squidRotated = R*squidPoints;
 squidX = squidX + squidForwardMove*cos(squidTheta);
@@ -123,7 +127,7 @@ if toggleState
   set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
 else
   if isempty(squidHandle) || ~ishandle(squidHandle)
-    squidHandle = drawSquid(squidSize, squidColor, squidWidth, clock, squidX, squidY, squidTheta);;
+    squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, squidY, squidTheta);;
   else
         for i = 1:length(squidHandle)
           set(squidHandle(i), 'XData', squidRotated(1,:) + squidX, 'YData', squidRotated(2,:) + squidY);
@@ -185,7 +189,7 @@ endfor
  pause(.1);
 
 % we have to increment the clock manually, or else the code freezes every time we toggle between images
-clock = clock + 1;
+oceanClock = oceanClock + 1;
 
 delete(circleHandle);
 delete(fishHandle);
