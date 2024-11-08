@@ -1,6 +1,6 @@
 function circleMatrix = getCircle (radius, gapAngle)
 
-lineSegments = 50;
+lineSegments = 15;
 angleResolution = 2*pi/lineSegments;
 
 theta = [gapAngle : angleResolution : 2*pi-gapAngle];

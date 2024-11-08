@@ -34,6 +34,7 @@ playerHealth = 100;
 
 % squid creation
   squidColor = [.2 .1 .6];
+  squidStripeColor = [0 1 0];
   squidWidth = 4;
   squidSize = 50;
  % squid movement
@@ -144,6 +145,8 @@ if(squidCaught == 1)
   squidX = squidSize*2;
   squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
   squidColor = [rand rand rand];
+  stripeColor = [rand rand rand];
+  squidStripeColor = stripeColor;
 endif
 
 ##if(squidCaught == 0)
@@ -191,7 +194,7 @@ xOwens = squidX;
 yOwens = squidY;
 
 % draw squid
-squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, squidY, squidTheta);
+squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oceanClock, squidX, squidY, squidTheta);
 
   % toggle the squid on
 ##  if toggleState
@@ -248,34 +251,32 @@ squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, s
    endfor
 
    % check bubble
- for i = 1: numBubbles
- [bubbleX(i) , bubbleY(i)] = checkBoundary (bubbleX(i),bubbleY(i),oceanHeight,oceanWidth,bubbleRadius(i));
+  for i = 1: numBubbles
+  [bubbleX(i) , bubbleY(i)] = checkBoundary (bubbleX(i),bubbleY(i),oceanHeight,oceanWidth,bubbleRadius(i));
 
-endfor
+  endfor
 
 % draw bubbles
-   for i = 1: numBubbles
+    for i = 1: numBubbles
 
    circleHandle(i) = drawCircle(bubbleRadius(i),bubbleX(i),bubbleY(i),bubbleColor,bubbleLineWidth);
 
-endfor
+    endfor
 % make all of the objects appear again
  drawnow;
 
- pause(.1);
+ pause(0.03);
 
 % we have to increment the clock manually, or else the code freezes every time we toggle between images
 oceanClock = oceanClock + 1;
 
-  if (squidCaught == 0)
-  delete(squidHandle);
-  endif
+delete(squidHandle);
+
 delete(playerHandle);
 delete(circleHandle);
 delete(fishHandle);
-  if ~isempty(squidHandle) && ishandle(squidHandle)
-    delete(squidHandle);
-  endif
+
+
 
 endwhile
 
