@@ -1,11 +1,21 @@
 function animateSquid ()
 
+% global params
+global cmd;
+global mouseCmd;
+global playerX;
+global playerY;
+
 oceanImage = "OceanImage.png";
 birdImage = "SmallBird.png";
 orangethImage = "OrangethOwens.png";
 greenethHeadImage = "GreenethHead.png";
 [oceanHeight, oceanWidth] = drawOcean(oceanImage);
 ## [owensHeight,owensWidth] = drawOwens (greenethHeadImage);
+
+% command param
+cmd = "null";
+mouseCmd = "null";
 
 oceanClock = 0;
 
@@ -18,6 +28,9 @@ playerHeadSize = 30;
 netSize = 20;
 playerColor = [0 0 1];
 playerLineWidth = 2;
+playerSpearX = 0;
+playerSpearY = 0;
+playerHealth = 100;
 
 % squid creation
   squidColor = [.2 .1 .6];
@@ -31,6 +44,15 @@ playerLineWidth = 2;
   squidX=500;
   squidY=400;
   squidTheta = 0;
+
+  %squid caught
+  squidCaught = 0;
+  totalSquidsCaught = 0; % the total number of squids
+
+  % text spots
+  healthStatusLocation = [100, 200];
+  squidsCaughtLocation = [100, 125];
+  healthBarRed = [1, 0, 0];
 
   % bubble creation
   numBubbles = 3;
@@ -56,6 +78,7 @@ maxRadius = oceanHeight;
   fishForwardMove = 100;
   fishColor = [1, 0, 0];
   fishLineWidth = 3;
+  fishBiteDamage = 10;
 
   % Owens time
   xOwens = 100;
@@ -64,14 +87,14 @@ maxRadius = oceanHeight;
   xOwensSpe = 25;
   yOwensSpe = 1;
 
-  [owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
+##  [owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
 
   % original parameters
   toggleState = false;
   squidHandle = []; % squid's here right now
 
   % keyboard being called
-  set(gcf, 'KeyPressFcn', @keyPressed);
+ ## set(gcf, 'KeyPressFcn', @keyPressed);
 
   isRunning = true; % keep the loop running
 
@@ -82,22 +105,72 @@ maxRadius = oceanHeight;
 ##  while isRunning && clock <= 500
 hold on; % keep axises and plots for everything
 oceanClock = oceanClock + 1; % give clock a starting value
+
+% let the game end
+    if (cmd == "q" || playerHealth <=0)
+      if(cmd == "q")
+        disp("Quitting ...");
+      else
+       text(oceanWidth/2, oceanHeight/2, "Game Over!!!", 'FontSize', 80, 'Color', healthBarRed);
+      endif
+      pause(2);
+      close();
+      break;
+    endif
+
+% change health and catch status
+myMessage = strcat('Health', ' ');
+healthStatusMessage = strcat(myMessage, num2str(playerHealth));
+healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
+catchStatusMessage = strcat('Squids Caught ', num2str(totalSquidsCaught));
+squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
+
+% Move Player
+if(cmd == "a" || cmd == "d" || cmd == "w" || cmd == "s")
+[playerX, playerY, playerTheta] = movePlayer (playerX, playerY, playerTheta, cmd);
+endif
+
+
 %---------------------player stuff--------------------------------------
 % Draw Player
-playerHandle = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
+[playerHandle, playerSpearX, playerSpearY] = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
 
+squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize)
 
+% check if the squid has to be caught
+if(squidCaught == 1)
+  totalSquidsCaught = squidCaught + 1;
+  squidCaught = 0;
+  squidX = squidSize*2;
+  squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
+  squidColor = [rand rand rand];
+endif
+
+##if(squidCaught == 0)
+##  squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize)
+##endif
+
+% command back to null
+cmd = "null";
 % --------------------fish stuff----------------------------------------
   % move fish
   fishX = fishX + fishForwardMove;
 
 
   % check fish
-  [fishX,fishY] = checkBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
+  [fishX, fishY] = checkFishBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
 
     % draw fish
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
+ % is player bitten
+ playerBitten = isPlayerBitten(playerX, playerY, fishX, fishY, playerBodySize);
+
+  if(playerBitten == 1)
+   playerHealth = playerHealth - fishBiteDamage;
+  endif
+
+ if(squidCaught == 0)
 % --------------------squid stuff----------------------------------------
 % rotate by theta radians
 squidPoints = getSquid(squidSize, oceanClock);
@@ -117,27 +190,31 @@ squidTheta = squidTheta + squidDeltaTheta;
 xOwens = squidX;
 yOwens = squidY;
 
+% draw squid
+squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, squidY, squidTheta);
+
   % toggle the squid on
-if toggleState
-  if ~isempty(squidHandle) && ishandle(squidHandle)
-        delete(squidHandle);
-        squidHandle = [];
-  endif
-  set(owensHandle, 'Visible', 'on');
-  set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
-else
-  if isempty(squidHandle) || ~ishandle(squidHandle)
-    squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, squidY, squidTheta);;
-  else
-        for i = 1:length(squidHandle)
-          set(squidHandle(i), 'XData', squidRotated(1,:) + squidX, 'YData', squidRotated(2,:) + squidY);
-        endfor
-  endif
-  set(owensHandle,'Visible','off');
-   % rotate parameters, start'r up
-## else
-## Insert Greeneth toggles
-endif
+##  if toggleState
+##    if ~isempty(squidHandle) && ishandle(squidHandle)
+##        delete(squidHandle);
+##        squidHandle = [];
+##    endif
+##    set(owensHandle, 'Visible', 'on');
+##    set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
+##  else
+##    if isempty(squidHandle) || ~ishandle(squidHandle)
+##    squidHandle = drawSquid(squidSize, squidColor, squidWidth, oceanClock, squidX, squidY, squidTheta);
+##    else
+##          for i = 1:length(squidHandle)
+##            set(squidHandle(i), 'XData', squidRotated(1,:) + squidX, 'YData', squidRotated(2,:) + squidY);
+##          endfor
+##    endif
+##  set(owensHandle,'Visible','off');
+##   % rotate parameters, start'r up
+#### else
+#### Insert Greeneth toggles
+##  endif
+ endif
 ##R = getRotate(squidTheta);
 ##
 ##% rotate the squid again
@@ -185,12 +262,15 @@ endfor
 % make all of the objects appear again
  drawnow;
 
-
  pause(.1);
 
 % we have to increment the clock manually, or else the code freezes every time we toggle between images
 oceanClock = oceanClock + 1;
 
+  if (squidCaught == 0)
+  delete(squidHandle);
+  endif
+delete(playerHandle);
 delete(circleHandle);
 delete(fishHandle);
   if ~isempty(squidHandle) && ishandle(squidHandle)
@@ -199,13 +279,13 @@ delete(fishHandle);
 
 endwhile
 
-  % calleth the keyeth func
-  function keyPressed(~,event)
-    if strcmp(event.Key, 'k') % press the 'k' button on the keyboard to toggle
-      toggleState = ~toggleState; % switcheth squideth and greeneth
-    elseif strcmp(event.Key, 'escape')
-      isRunning = false; % stop the animation
-    endif
-  endfunction
+##  % calleth the keyeth func
+##  function keyPressed(~,event)
+##    if strcmp(event.Key, 'k') % press the 'k' button on the keyboard to toggle
+##      toggleState = ~toggleState; % switcheth squideth and greeneth
+##    elseif strcmp(event.Key, 'escape')
+##      isRunning = false; % stop the animation
+##    endif
+##  endfunction
 
 endfunction

@@ -18,6 +18,11 @@ image = imread(imageName);
 % display the image
 imshow(imageName);
 
+% give the game a title
+title("Squids", 'FontSize', 30)
 
+% set listeners for keyboard and mouse
+set(gcf, 'KeyPressFcn', @(src, event)keypress_callback(src,event));
+##set(gcf, 'WindowButtonMotionFcn', @(src, event) mouseMotion_callback(src,event));
 
 endfunction

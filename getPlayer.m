@@ -33,6 +33,34 @@ legAngleMax = pi/4;
 legAngleTicks = 20;
 legLength = playerBodySize;
 
+% animate leg during move commands
+
+if (cmd == "w")
+
+  legAngleRight = pi + legAngleMax*sin(2*pi*gameClock/legAngleTicks);
+  legAngleLeft = pi - legAngleMax*sin(2*pi*gameClock/legAngleTicks);
+
+  if(cos(2*pi*gameClock/legAngleTicks)>0)
+  flipperAngleRight = legAngleRight - flipperMaxAngle;
+  else
+  flipperAngleRight = legAngleRight + flipperMaxAngle;
+  endif
+
+  if(-cos(2*pi*gameClock/legAngleTicks)>0)
+  flipperAngleLeft = legAngleLeft - flipperMaxAngle;
+  else
+  flipperAngleLeft = legAngleLeft + flipperMaxAngle;
+  endif
+
+else
+  legAngleRight = pi;
+  legAngleLeft = pi;
+  flipperAngleRight = legAngleRight - flipperMaxAngle;
+  flipperAngleLeft = legAngleLeft + flipperMaxAngle;
+endif
+
+
+
 if ( cmd == "a" || cmd == "d" || cmd == "w")
   legAngleRight = pi + legAngleMax*sin(2*pi*oceanClock/legAngleTicks);
   legAngleLeft = pi + legAngleMax*cos(2*pi*oceanClock/legAngleTicks);

@@ -1,4 +1,4 @@
-function handle = drawPlayer (playerX, playerY, playerTheta, ...
+function [handle, spearX, spearY] = drawPlayer (playerX, playerY, playerTheta, ...
                               playerBodySize, playerHeadSize, netSize, ...
                               playerColor, playerLineWidth, oceanClock)
 
@@ -35,6 +35,11 @@ pt13 = player(:,13);
 % net
 pt12 = player(:,12);
 pt14 = player(:,14);
+
+% spear variables
+spearX = pt12(1);
+spearY = pt12(2);
+
 
 % head
 xHeadPoints = player(1,firstHeadPoint:lastHeadPoint);
