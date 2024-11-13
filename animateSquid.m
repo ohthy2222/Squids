@@ -19,6 +19,8 @@ mouseCmd = "null";
 
 oceanClock = 0;
 
+
+
 % player params
 playerX = round(oceanWidth/2);
 playerY = round(oceanHeight/2);
@@ -54,6 +56,10 @@ playerHealth = 100;
   healthStatusLocation = [100, 200];
   squidsCaughtLocation = [100, 125];
   healthBarRed = [1, 0, 0];
+  % help message creation
+  helpMessageX = 800;
+  helpMessageY = 800;
+  helpMessageColor = [1,1,1];
 
   % bubble creation
   numBubbles = 3;
@@ -119,10 +125,15 @@ oceanClock = oceanClock + 1; % give clock a starting value
       break;
     endif
 
-% change health and catch status
+% display help message
+    text(helpMessageX, helpMessageY, 'help!!!', 'FontSize', 16, 'Color', helpMessageColor);
+
+% change health status
 myMessage = strcat('Health', ' ');
 healthStatusMessage = strcat(myMessage, num2str(playerHealth));
 healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
+
+% change catch status
 catchStatusMessage = strcat('Squids Caught ', num2str(totalSquidsCaught));
 squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 

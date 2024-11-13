@@ -33,8 +33,20 @@ legAngleMax = pi/4;
 legAngleTicks = 20;
 legLength = playerBodySize;
 
-% animate leg during move commands
+##% spear params
+##
+##
+##% params for lightning electrocuteth
+##laserX = =3
+##
+##
+##if (cmd == "l")
+##
+##  lightningHandle = getLightning(laserX, laserY, flashColor, lightningWidth);
+##
+##endif
 
+% animate leg during move commands
 if (cmd == "w")
 
   legAngleRight = pi + legAngleMax*sin(2*pi*gameClock/legAngleTicks);
