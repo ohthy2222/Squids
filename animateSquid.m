@@ -129,12 +129,12 @@ oceanClock = oceanClock + 1; % give clock a starting value
     text(helpMessageX, helpMessageY, 'help!!!', 'FontSize', 16, 'Color', helpMessageColor);
 
 % change health status
-myMessage = strcat('Health', ' ');
-healthStatusMessage = strcat(myMessage, num2str(playerHealth));
+myMessage = strcat('Health ', ' ');
+healthStatusMessage = cstrcat(myMessage, num2str(playerHealth));
 healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 % change catch status
-catchStatusMessage = strcat('Squids Caught ', num2str(totalSquidsCaught));
+catchStatusMessage = cstrcat('Squids Caught ', num2str(totalSquidsCaught));
 squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 % Move Player
@@ -172,7 +172,7 @@ cmd = "null";
 
 
   % check fish
-  [fishX, fishY] = checkFishBoundary(fishX,fishY,oceanWidth,oceanHeight,fishRadius);
+  [fishX, fishY] = checkFishBoundary(fishX,fishY,oceanHeight,oceanWidth,fishRadius);
 
     % draw fish
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
@@ -282,7 +282,7 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 oceanClock = oceanClock + 1;
 
 delete(squidHandle);
-
+delete(healthHandle);
 delete(playerHandle);
 delete(circleHandle);
 delete(fishHandle);
