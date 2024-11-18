@@ -85,7 +85,19 @@ maxRadius = oceanHeight;
   fishForwardMove = 100;
   fishColor = [1, 0, 0];
   fishLineWidth = 3;
-  fishBiteDamage = 10;
+  fishBiteDamage = 10; %amount deducted from player's health when bitten
+  fishStunTime = 10;
+
+  % lightning params
+  lightningSize = 100;
+  lightningWidth = 6;
+  lightningColor = [1, 1, 0];
+  lightningMove = oceanWidth/5;
+  lightningMaxFlashes = 1;
+  lightningX = 0;
+  lightningY = 0;
+  lightningTheta = 0;
+  lightningFlash = 0;
 
   % Owens time
   xOwens = 100;
@@ -167,15 +179,23 @@ endif
 % command back to null
 cmd = "null";
 % --------------------fish stuff----------------------------------------
-  % move fish
-  fishX = fishX + fishForwardMove;
+ % check whether fish is stunned or not
+ fishStunned = isFishStunned (lightningX, lightningY, fishX, fishY, 2*fishRadius);
 
+ % move fish
+  fishX = fishX + fishForwardMove;
 
   % check fish
   [fishX, fishY] = checkFishBoundary(fishX,fishY,oceanHeight,oceanWidth,fishRadius);
 
     % draw fish
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
+
+ % did the fish deal damage to the player
+ playerBitten = isDamageTaken(playerX, playerY, fishTeethX, fishTeethY, playerSize);
+ if (playerBitten)
+   playerHealth - playerHealth - 10;
+ endif
 
  % is player bitten
  playerBitten = isPlayerBitten(playerX, playerY, fishX, fishY, playerBodySize);
@@ -252,7 +272,6 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 % CALLETH FORTHETH THE GREENETH
 ##[owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
 ##set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
-
 % --------------------bubble stuff-----------------------------------------
    % move bubbles
    for i = 1: numBubbles
@@ -272,9 +291,41 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 
    circleHandle(i) = drawCircle(bubbleRadius(i),bubbleX(i),bubbleY(i),bubbleColor,bubbleLineWidth);
 
-    endfor
+  endfor
+%--------------------lightning stuff-----------------------------------------------------------------------------
+
+  % have player create lightning
+  if (cmd == "l" && lightningFlash == 0)
+
+    lightningX = playerSpearX; %- 10;
+    lightningY = playerSpearY; %- 10;
+    lightningTheta = playerTheta;
+    lightningFlash = 1;
+
+  endif
+
+  % only create lightning if there isn't lightning on screen
+  if (lightningFlash > 0)
+
+    lightningHandle = drawLightning (lightningSize, lightningColor, lightningWidth, oceanClock, lightningX, lightningY, lightningTheta);
+
+  endif
+
+  % move lightning
+  if (lightningFlash > 0)
+
+    lightningX = lightningX + lightningMove*cos(lightningTheta);
+    lightningY = lightningY + lightningMove*sin(lightningTheta);
+
+  endif
+
+  % check boundary for lightning
+  [lightningX, lightningY, lightningFlash] = checkLightningBoundary (lightningX, lightningY, oceanWidth, oceanHeight, lightningSize, lightningFlash);
+
 % make all of the objects appear again
  drawnow;
+
+ cmd = "null";
 
  pause(0.03);
 
@@ -286,8 +337,10 @@ delete(healthHandle);
 delete(playerHandle);
 delete(circleHandle);
 delete(fishHandle);
-
-
+delete(squidsCaughtHandle);
+  if (lightningFlash > 0)
+    delete(lightningHandle);
+  endif
 
 endwhile
 
