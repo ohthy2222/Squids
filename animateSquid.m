@@ -47,8 +47,8 @@ playerHealth = 100;
   squidTheta = 0;
 
   %squid caught
-  squidCaught = 0;
-  totalSquidsCaught = 0; % the total number of squids
+  squidsCaught = 0;
+##  totalSquidsCaught = 0; % the total number of squids
 
   % text spots
   healthStatusLocation = [100, 200];
@@ -149,7 +149,7 @@ healthStatusMessage = cstrcat(myMessage, num2str(playerHealth));
 healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 % change catch status
-catchStatusMessage = cstrcat('Squids Caught ', num2str(totalSquidsCaught));
+catchStatusMessage = cstrcat('Squids Caught ', num2str(squidsCaught));
 squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 %---------------------player stuff--------------------------------------
@@ -161,12 +161,11 @@ squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catc
 % Draw Player
 [playerHandle, playerSpearX, playerSpearY] = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
 
-squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize);
+squidsCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize);
 
 % check if the squid has to be caught
-  if(squidCaught == 1)
-    totalSquidsCaught = squidCaught + 1;
-    squidCaught = 0;
+  if(squidsCaught == 1)
+    squidsCaught = squidsCaught + 1;
     squidX = squidSize*2;
     squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
     squidColor = [rand rand rand];
@@ -179,7 +178,6 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
 ##endif
 
 % command back to null
-cmd = "null";
 % --------------------fish stuff----------------------------------------
  % check whether fish is stunned or not
  fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 2*fishRadius);
@@ -208,13 +206,13 @@ cmd = "null";
  endif
 
  % is player bitten
- playerBitten = isPlayerBitten(playerX, playerY, fishX, fishY, playerBodySize);
+ playerBitten = isDamageTaken(playerX, playerY, fishX, fishY, playerBodySize);
 
   if(playerBitten == 1)
    playerHealth = playerHealth - fishBiteDamage;
   endif
 
- if(squidCaught == 0)
+ if(squidsCaught == 0)
 % --------------------squid stuff----------------------------------------
 % rotate by theta radians
 squidPoints = getSquid(squidSize, oceanClock);
@@ -303,18 +301,17 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 
     endfor
 %--------------------lightning stuff-----------------------------------------------------------------------------
-
   % have player create lightning
-  if (cmd == "l" && lightningFlash == 0)
+  if (cmd == "l")
 
-    for i = 1:lightningMaxFlashes
+    for (i = 1:lightningMaxFlashes)
 
-      if(lightningFlash(i) == 0)
-      lightningX(i) = playerSpearX; %- 10;
-      lightningY(i) = playerSpearY; %- 10;
-      lightningTheta(i) = playerTheta;
-      lightningFlash(i) = 1;
-      break;
+      if (lightningFlash(i) == 0)
+        lightningFlash(i) = 1;
+        lightningX(i) = playerSpearX;
+        lightningY(i) = playerSpearY;
+        lightningTheta(i) = playerTheta;
+        i = lightningMaxFlashes + 1;
       endif
 
     endfor
@@ -335,19 +332,17 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 
   % check boundary for lightning
   for (i = 1: lightningMaxFlashes)
-    if(lightningFlash(i) > 0)
 
     [lightningX(i), lightningY(i), lightningFlash(i)] = checkLightningBoundary (lightningX(i), lightningY(i), oceanWidth, oceanHeight, lightningSize, lightningFlash(i));
-
-    endif
 
   endfor
 
   % only create lightning if there isn't lightning on screen
   for (i = 1: lightningMaxFlashes)
+
     if (lightningFlash(i) > 0)
 
-    lightningHandle(:,i) = drawLightning (lightningSize, lightningColor, lightningWidth, oceanClock, lightningX(i), lightningY(i), lightningTheta(i));
+    [lightningHandle(:,i), lightningPointX(i), lightningPointY(i)] = drawLightning (lightningSize, lightningColor, lightningWidth, oceanClock, lightningX(i), lightningY(i), lightningTheta(i));
 
     endif
 
