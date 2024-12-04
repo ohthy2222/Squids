@@ -19,8 +19,6 @@ mouseCmd = "null";
 
 oceanClock = 0;
 
-
-
 % player params
 playerX = round(oceanWidth/2);
 playerY = round(oceanHeight/2);
@@ -85,8 +83,12 @@ maxRadius = oceanHeight;
   fishForwardMove = 100;
   fishColor = [1, 0, 0];
   fishLineWidth = 3;
+  fishTeethX = 0;
+  fishTeethY = 0;
   fishBiteDamage = 10; %amount deducted from player's health when bitten
   fishStunTime = 10;
+  fishStunTimer = 0;
+  fishGotStunned = 0;
 
   % lightning params
   lightningSize = 100;
@@ -150,28 +152,27 @@ healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStat
 catchStatusMessage = cstrcat('Squids Caught ', num2str(totalSquidsCaught));
 squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
-% Move Player
-if(cmd == "a" || cmd == "d" || cmd == "w" || cmd == "s")
-[playerX, playerY, playerTheta] = movePlayer (playerX, playerY, playerTheta, cmd);
-endif
-
-
 %---------------------player stuff--------------------------------------
+% Move Player
+  if(cmd == "a" || cmd == "d" || cmd == "w" || cmd == "s")
+    [playerX, playerY, playerTheta] = movePlayer (playerX, playerY, playerTheta, cmd);
+  endif
+
 % Draw Player
 [playerHandle, playerSpearX, playerSpearY] = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
 
-squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize)
+squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize);
 
 % check if the squid has to be caught
-if(squidCaught == 1)
-  totalSquidsCaught = squidCaught + 1;
-  squidCaught = 0;
-  squidX = squidSize*2;
-  squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
-  squidColor = [rand rand rand];
-  stripeColor = [rand rand rand];
-  squidStripeColor = stripeColor;
-endif
+  if(squidCaught == 1)
+    totalSquidsCaught = squidCaught + 1;
+    squidCaught = 0;
+    squidX = squidSize*2;
+    squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
+    squidColor = [rand rand rand];
+    stripeColor = [rand rand rand];
+    squidStripeColor = stripeColor;
+  endif
 
 ##if(squidCaught == 0)
 ##  squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize)
@@ -181,7 +182,15 @@ endif
 cmd = "null";
 % --------------------fish stuff----------------------------------------
  % check whether fish is stunned or not
- fishStunned = isFishStunned (lightningX, lightningY, fishX, fishY, 2*fishRadius);
+ fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 2*fishRadius);
+
+ if(fishGotStunned)
+  fishStunTimer = fishStunTime;
+ endif
+
+ if(fishStunTimer == 0)
+  fishX = fishX + fishForwardMove;
+ endif
 
  % move fish
   fishX = fishX + fishForwardMove;
@@ -193,7 +202,7 @@ cmd = "null";
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
  % did the fish deal damage to the player
- playerBitten = isDamageTaken(playerX, playerY, fishTeethX, fishTeethY, playerSize);
+ playerBitten = isDamageTaken(playerX, playerY, fishTeethX, fishTeethY, playerBodySize);
  if (playerBitten)
    playerHealth = playerHealth - 10;
  endif
@@ -345,16 +354,22 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
   endfor
 
 
-% make all of the objects appear again
- drawnow;
+##% make all of the objects appear again
+## drawnow;
 
  cmd = "null";
 
- pause(0.03);
+ pause(0.1);
 
 % we have to increment the clock manually, or else the code freezes every time we toggle between images
 oceanClock = oceanClock + 1;
 
+% update fish timer
+  if(fishStunTimer > 0)
+    fishStunTimer = fishStunTimer - 1;
+  endif
+
+% delete everything
 delete(squidHandle);
 delete(healthHandle);
 delete(playerHandle);

@@ -1,15 +1,20 @@
-function fishStunned = isFishStunned (lightningX, lightningY, fishX, fishY, hitBox)
+function fishStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, hitBoxSize)
 
-% calc the space between lightning and the fish
-a = lightningX - fishX;
-b = lightningY - fishY;
+lightningBolts = length(lightningFlash);
+fishStunned = 0;
 
-d = sqrt(a^2 + b^2);
+for (i=1: lightningBolts)
 
-if (d < hitBox)
-  fishStunned = 1;
-else
-  fishStunned = 0;
-endif
+  if(lightningFlash(i) == 1)
+    % calc the space between lightning and the fish
+    d = getDistance(fishX, fishY, lightningX(i), lightningY(i));
+
+    if (d < hitBoxSize)
+      fishStunned = 1;
+    endif
+
+  endif
+
+endfor
 
 endfunction
