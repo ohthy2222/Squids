@@ -19,6 +19,10 @@ mouseCmd = "null";
 
 oceanClock = 0;
 
+% get the level of the game
+  level = getLevel();
+  squids = level;
+
 % player params
 playerX = round(oceanWidth/2);
 playerY = round(oceanHeight/2);
@@ -58,6 +62,13 @@ playerHealth = 100;
   helpMessageX = 800;
   helpMessageY = 800;
   helpMessageColor = [1,1,1];
+
+  % bomb creation
+  numBombs = 4;
+  bombRadius = 30;
+  bombColor = [0, 0, 0];
+  bombLineWidth = 3;
+  bombStep = 50;
 
   % bubble creation
   numBubbles = 3;
@@ -112,8 +123,8 @@ maxRadius = oceanHeight;
 ##  [owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
 
   % original parameters
-  toggleState = false;
-  squidHandle = []; % squid's here right now
+##  toggleState = false;
+##  squidHandle = []; % squid's here right now
 
   % keyboard being called
  ## set(gcf, 'KeyPressFcn', @keyPressed);
@@ -215,9 +226,7 @@ squidsCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSi
  if(squidsCaught == 0)
 % --------------------squid stuff----------------------------------------
 % rotate by theta radians
-squidPoints = getSquid(squidSize, oceanClock);
-R = getRotate(squidTheta);
-squidRotated = R*squidPoints;
+##squidTheta = squidTheta + pi/3;
 squidX = squidX + squidForwardMove*cos(squidTheta);
 squidY = squidY + squidForwardMove*sin(squidTheta);
 squidX = squidX + squidForwardMove;
@@ -365,7 +374,9 @@ oceanClock = oceanClock + 1;
   endif
 
 % delete everything
-delete(squidHandle);
+if (squidsCaught == 0)
+  delete(squidHandle);
+endif
 delete(healthHandle);
 delete(playerHandle);
 delete(circleHandle);

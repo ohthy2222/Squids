@@ -121,7 +121,7 @@ pt13 = [0.7*playerBodySize; 0.5*playerBodySize; 1]; % hand
 
 %net
 pt12 = [0; 0.5*playerBodySize; 1]; %hand
-pt14 = [2.0*playerBodySize; 0.5*playerBodySize; 1]; % top of spine
+pt14 = [2.0*playerBodySize; 0.5*playerBodySize; 1]; % tip of spear
 
 % head
 headRadius = playerBodySize/4;

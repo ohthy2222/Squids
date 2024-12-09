@@ -37,8 +37,8 @@ pt12 = player(:,12);
 pt14 = player(:,14);
 
 % spear variables
-spearX = pt12(1);
-spearY = pt12(2);
+spearX = pt14(1);
+spearY = pt14(2);
 
 
 % head
