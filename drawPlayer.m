@@ -59,5 +59,9 @@ handle(11) = line(xHeadPoints,yHeadPoints); % head
 set(handle(11),'Color',playerColor);
 set(handle(11),'LineWidth',playerLineWidth);
 
+% code for filling a shape
+##x = [pt13(1), pt14(1), pt15(1), pt16(1)];
+##y = [pt13(2), pt14(2), pt15(2), pt16(2)];
+handle(12) = patch(xHeadPoints, yHeadPoints, playerColor);
 
 endfunction

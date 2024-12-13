@@ -51,8 +51,8 @@ playerHealth = 100;
   squidTheta = 0;
 
   %squid caught
-  squidsCaught = 0;
-##  totalSquidsCaught = 0; % the total number of squids
+  squidCaught = 0;
+  totalSquidsCaught = 0; % the total number of squids
 
   % text spots
   healthStatusLocation = [100, 200];
@@ -68,16 +68,24 @@ playerHealth = 100;
   bombRadius = 30;
   bombColor = [0, 0, 0];
   bombLineWidth = 3;
-  bombStep = 50;
+  bombStep = -50;
+
+  for i = 1: numBombs
+
+    bombRadius;
+    bombX(i) = rand() * oceanWidth;
+    bombY(i) = oceanHeight;
+
+  endfor
 
   % bubble creation
   numBubbles = 3;
   bubbleMaxRadius = 20;
   bubbleMinRadius = 5;
-maxRadius = oceanHeight;
- bubbleColor = [.2, .1, .7];
- bubbleLineWidth = 3;
- bubbleStep = 50;
+  maxRadius = oceanHeight;
+  bubbleColor = [.2, .1, .7];
+  bubbleLineWidth = 3;
+  bubbleStep = 50;
 
   for i = 1: numBubbles
 
@@ -160,7 +168,7 @@ healthStatusMessage = cstrcat(myMessage, num2str(playerHealth));
 healthHandle = text(healthStatusLocation(1), healthStatusLocation(2), healthStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 % change catch status
-catchStatusMessage = cstrcat('Squids Caught ', num2str(squidsCaught));
+catchStatusMessage = cstrcat('Squids Caught ', num2str(totalSquidsCaught));
 squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catchStatusMessage, 'FontSize', 20, 'Color', healthBarRed);
 
 %---------------------player stuff--------------------------------------
@@ -172,11 +180,11 @@ squidsCaughtHandle = text(squidsCaughtLocation(1), squidsCaughtLocation(2), catc
 % Draw Player
 [playerHandle, playerSpearX, playerSpearY] = drawPlayer (playerX, playerY, playerTheta, playerBodySize, playerHeadSize, netSize, playerColor, playerLineWidth, oceanClock);
 
-squidsCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize);
+squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize);
 
 % check if the squid has to be caught
-  if(squidsCaught == 1)
-    squidsCaught = squidsCaught + 1;
+  if(squidCaught == 1)
+    totalSquidsCaught = totalSquidsCaught + 1;
     squidX = squidSize*2;
     squidY = 2*squidSize + squidForwardMove + rand*(oceanHeight - 4*squidSize - squidForwardMove);
     squidColor = [rand rand rand];
@@ -223,7 +231,7 @@ squidsCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSi
    playerHealth = playerHealth - fishBiteDamage;
   endif
 
- if(squidsCaught == 0)
+ if(squidCaught == 0)
 % --------------------squid stuff----------------------------------------
 % rotate by theta radians
 ##squidTheta = squidTheta + pi/3;
@@ -289,7 +297,28 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 % CALLETH FORTHETH THE GREENETH
 ##[owensHeight, owensWidth, owensHandle] = drawOwens(greenethHeadImage, xOwens, yOwens);
 ##set(owensHandle, 'XData', [xOwens, xOwens + owensWidth], 'YData', [yOwens, yOwens + owensHeight]);
-% --------------------bubble stuff-----------------------------------------
+% --------------------bombs stuff-----------------------------------------
+   % move bombs
+   for i = 1: numBombs
+
+     bombY(i) = bombY(i) - rand()*bombStep;
+
+   endfor
+
+   % check bombs
+   for i = 1: numBombs
+
+      [bombX(i), bombY(i)] = checkBoundary (bombX(i),bombY(i),oceanHeight,oceanWidth,bombRadius);
+
+   endfor
+
+% draw bombs
+    for i = 1: numBombs
+
+      bombHandle(:,i) = drawBombs(bombRadius,bombX(i),bombY(i),bombColor,bombLineWidth);
+      disp(bombHandle(:,i));
+    endfor
+  % --------------------bubble stuff-----------------------------------------
    % move bubbles
    for i = 1: numBubbles
 
@@ -374,11 +403,12 @@ oceanClock = oceanClock + 1;
   endif
 
 % delete everything
-if (squidsCaught == 0)
-  delete(squidHandle);
-endif
+  if (squidCaught == 0)
+    delete(squidHandle);
+  endif
 delete(healthHandle);
 delete(playerHandle);
+delete(bombHandle);
 delete(circleHandle);
 delete(fishHandle);
 delete(squidsCaughtHandle);
