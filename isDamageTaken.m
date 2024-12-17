@@ -1,6 +1,6 @@
 function isDamaged = isDamageTaken (X, Y, damagerX, damagerY, hitBox)
 
-% calc the space between spear and squidCaught
+% calc the space between damager and the damaged
 a = X - damagerX;
 b = Y - damagerY;
 

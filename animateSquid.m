@@ -68,14 +68,13 @@ playerHealth = 100;
   bombRadius = 30;
   bombColor = [0, 0, 0];
   bombLineWidth = 3;
-  bombStep = -50;
+  bombStep = -100;
+  bombDamage = 10;
 
   for i = 1: numBombs
-
     bombRadius;
-    bombX(i) = rand() * oceanWidth;
-    bombY(i) = oceanHeight;
-
+    bombX(i) = 200
+    bombY(i) = 500
   endfor
 
   % bubble creation
@@ -88,11 +87,9 @@ playerHealth = 100;
   bubbleStep = 50;
 
   for i = 1: numBubbles
-
     bubbleRadius(i) = rand()*bubbleMaxRadius + bubbleMinRadius;
     bubbleX(i) = rand() * oceanWidth;
     bubbleY(i) = oceanHeight;
-
   endfor
 
    %create fish
@@ -104,7 +101,7 @@ playerHealth = 100;
   fishLineWidth = 3;
   fishTeethX = 0;
   fishTeethY = 0;
-  fishBiteDamage = 10; %amount deducted from player's health when bitten
+  fishBiteDamage = 25; %amount deducted from player's health when bitten
   fishStunTime = 10;
   fishStunTimer = 0;
   fishGotStunned = 0;
@@ -160,7 +157,7 @@ oceanClock = oceanClock + 1; % give clock a starting value
     endif
 
 % display help message
-    text(helpMessageX, helpMessageY, 'help!!!', 'FontSize', 16, 'Color', helpMessageColor);
+##    text(helpMessageX, helpMessageY, 'help!!!', 'FontSize', 16, 'Color', helpMessageColor);
 
 % change health status
 myMessage = strcat('Health ', ' ');
@@ -218,11 +215,11 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
     % draw fish
  fishHandle = drawFish(fishRadius, fishX, fishY, fishColor, fishLineWidth);
 
- % did the fish deal damage to the player
- playerBitten = isDamageTaken(playerX, playerY, fishTeethX, fishTeethY, playerBodySize);
- if (playerBitten)
-   playerHealth = playerHealth - 10;
- endif
+## % did the fish deal damage to the player
+## playerBitten = isDamageTaken(playerX, playerY, fishTeethX, fishTeethY, playerBodySize);
+## if (playerBitten)
+##   playerHealth = playerHealth - 10;
+## endif
 
  % is player bitten
  playerBitten = isDamageTaken(playerX, playerY, fishX, fishY, playerBodySize);
@@ -312,12 +309,19 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 
    endfor
 
-% draw bombs
+    % draw bombs
     for i = 1: numBombs
 
       bombHandle(:,i) = drawBombs(bombRadius,bombX(i),bombY(i),bombColor,bombLineWidth);
       disp(bombHandle(:,i));
     endfor
+
+    % have player be damaged by bombs
+    bombsExploded = isDamageTaken (playerX, playerY, bombX, bombY, playerBodySize);
+    if(bombsExploded == 1)
+      playerHealth = playerHealth - bombDamage;
+    endif
+
   % --------------------bubble stuff-----------------------------------------
    % move bubbles
    for i = 1: numBubbles
