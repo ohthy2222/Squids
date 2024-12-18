@@ -39,6 +39,7 @@ playerHealth = 100;
 hurtSound = audioplayer(playerHurtSound, soundSamplingRate);
 
 
+
 % squid creation
   squidColor = [.2 .1 .6];
   squidStripeColor = [0 1 0];
@@ -73,6 +74,8 @@ hurtSound = audioplayer(playerHurtSound, soundSamplingRate);
   bombLineWidth = 3;
   bombStep = -100;
   bombDamage = 10;
+  [bombExplosion, soundSamplingRate] = getSound ("explosion.wav");
+  bombSound = audioplayer(bombExplosion, soundSamplingRate);
 
   for i = 1: numBombs
     bombX(i) = rand() * oceanWidth;
@@ -119,6 +122,8 @@ hurtSound = audioplayer(playerHurtSound, soundSamplingRate);
   lightningTheta  = zeros(1,lightningMaxFlashes);
   lightningFlash  = zeros(1,lightningMaxFlashes);
   lightningHandle = zeros(6, lightningMaxFlashes);
+  [lightningSoundTime, soundSamplingRate] = getSound ("lightning_sound.wav");
+  lightningSound = audioplayer(lightningSoundTime, soundSamplingRate);
 
   % Owens time
   xOwens = 100;
@@ -200,7 +205,7 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
 
  if(fishGotStunned)
   fishStunTimer = fishStunTime;
-  play(hurtSound);
+  play(lightningSound);
  endif
 
   if (fishStunTimer == 0)
@@ -225,6 +230,7 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
 
   if(playerBitten == 1)
    playerHealth = playerHealth - fishBiteDamage;
+   play(hurtSound);
   endif
 
  if(squidCaught == 0)
@@ -319,6 +325,7 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
     bombsExploded = isDamageTaken (playerX, playerY, bombX, bombY, playerBodySize);
     if(bombsExploded == 1)
       playerHealth = playerHealth - bombDamage;
+      play(bombSound);
     endif
 
   % --------------------bubble stuff-----------------------------------------
