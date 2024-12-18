@@ -35,6 +35,9 @@ playerLineWidth = 2;
 playerSpearX = 0;
 playerSpearY = 0;
 playerHealth = 100;
+[playerHurtSound, soundSamplingRate] = getSound ("hurt_sound.wav");
+hurtSound = audioplayer(playerHurtSound, soundSamplingRate);
+
 
 % squid creation
   squidColor = [.2 .1 .6];
@@ -193,10 +196,11 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
 ##endif
 % --------------------fish stuff----------------------------------------
  % check whether fish is stunned or not
- fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 4*fishRadius);
+ fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 2*fishRadius);
 
  if(fishGotStunned)
   fishStunTimer = fishStunTime;
+  play(hurtSound);
  endif
 
   if (fishStunTimer == 0)
