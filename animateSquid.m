@@ -72,9 +72,8 @@ playerHealth = 100;
   bombDamage = 10;
 
   for i = 1: numBombs
-    bombRadius;
-    bombX(i) = 200
-    bombY(i) = 500
+    bombX(i) = rand() * oceanWidth;
+    bombY(i) = oceanHeight;
   endfor
 
   % bubble creation
@@ -95,7 +94,7 @@ playerHealth = 100;
    %create fish
   fishX = 200;
   fishY = 500;
-  fishRadius = 50;
+  fishRadius = 80;
   fishForwardMove = 100;
   fishColor = [1, 0, 0];
   fishLineWidth = 3;
@@ -110,7 +109,7 @@ playerHealth = 100;
   lightningSize = 100;
   lightningWidth = 6;
   lightningColor = [1, 1, 0];
-  lightningMove = oceanWidth/5;
+  lightningMove = oceanWidth/20;
   lightningMaxFlashes = 10;
   lightningX      = zeros(1,lightningMaxFlashes);
   lightningY      = zeros(1,lightningMaxFlashes);
@@ -192,22 +191,18 @@ squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSiz
 ##if(squidCaught == 0)
 ##  squidCaught = isSquidCaught(playerSpearX, playerSpearY, squidX, squidY, squidSize)
 ##endif
-
-% command back to null
 % --------------------fish stuff----------------------------------------
  % check whether fish is stunned or not
- fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 2*fishRadius);
+ fishGotStunned = isFishStunned (lightningX, lightningY, fishX, fishY, lightningFlash, 4*fishRadius);
 
  if(fishGotStunned)
   fishStunTimer = fishStunTime;
  endif
 
- if(fishStunTimer == 0)
-  fishX = fishX + fishForwardMove;
- endif
-
- % move fish
-  fishX = fishX + fishForwardMove;
+  if (fishStunTimer == 0)
+    % move fish
+    fishX = fishX + fishForwardMove;
+  endif
 
   % check fish
   [fishX, fishY] = checkFishBoundary(fishX,fishY,oceanHeight,oceanWidth,fishRadius);
@@ -353,7 +348,7 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
         lightningX(i) = playerSpearX;
         lightningY(i) = playerSpearY;
         lightningTheta(i) = playerTheta;
-        i = lightningMaxFlashes + 1;
+      break;
       endif
 
     endfor
@@ -364,10 +359,8 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
   for (i = 1: lightningMaxFlashes)
 
     if (lightningFlash(i) > 0)
-
     lightningX(i) = lightningX(i) + lightningMove*cos(lightningTheta(i));
     lightningY(i) = lightningY(i) + lightningMove*sin(lightningTheta(i));
-
     endif
 
   endfor
@@ -379,7 +372,7 @@ squidHandle = drawSquid(squidSize, squidColor, squidStripeColor, squidWidth, oce
 
   endfor
 
-  % only create lightning if there isn't lightning on screen
+  % draw lightning
   for (i = 1: lightningMaxFlashes)
 
     if (lightningFlash(i) > 0)
